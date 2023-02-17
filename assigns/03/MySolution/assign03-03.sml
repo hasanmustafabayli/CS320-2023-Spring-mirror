@@ -15,6 +15,14 @@ equals [f(0), f(1), ..., f(n-1)]
 list_tabulate(n: int, f: int -> 'a): 'a list
 //
 *)
+fun list_tabulate(n: int, f: int -> 'a): 'a list=
+  let
+    fun tabulate(i) =
+      if i = n then []
+      else (f i) :: tabulate(i + 1)
+  in
+    tabulate(0)
+  end
 
 (* ****** ****** *)
 

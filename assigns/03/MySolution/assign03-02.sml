@@ -21,6 +21,21 @@ the list_range function
 //
 fun list_range(start: int, finish: int): int list
 *)
+fun list_range(start: int, finish: int): int list =
+  let
+    fun loop(newval: int, acc: int list ): int list =
+      if newval = finish 
+        then (acc)
+      else 
+        if newval > finish 
+            then (acc)
+        else (
+              loop(newval + 1, list_append(acc , [newval])))
+  in
+    loop(start, [])
+  end;
+
+
 
 (* ****** ****** *)
 
