@@ -34,6 +34,9 @@ type
 'xs * ('x0 -> bool) -> bool
 (* ****** ****** *)
 
+fun forall_to_exists (forall: ('xs, 'x0) forall_t): ('xs, 'x0) exists_t =
+  fn (xs, p) => not (forall(xs, fn x => not (p x)))
+
 (*
 fun
 forall_to_exists
