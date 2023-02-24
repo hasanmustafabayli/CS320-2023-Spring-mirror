@@ -26,6 +26,9 @@ in
   if n0 >= 2 then loop(2) else false
 end
 *)
+fun isPrime(n: int): bool =
+  if n < 2 then false
+  else not (List.exists (fn x => n mod x = 0) (List.tabulate (n-2, fn i => i+2)))
 
 (* ****** ****** *)
 
