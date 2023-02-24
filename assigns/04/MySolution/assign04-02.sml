@@ -29,6 +29,10 @@ the order of the elements in a list representation
 of a set is insignificant.
 //
 *)
+
+val list_subsets = fn(xs: 'a list) =>
+  foldr (fn (x, acc) => acc @ map (fn ys => x::ys) acc) [[]] xs;
+
 (* ****** ****** *)
 
 (*
