@@ -36,19 +36,17 @@ list_nchoose2(xs: int list): (int * int) list = ...
 (* ****** ****** *)
 
 (* end of [CS320-2023-Spring-midterm1-list_nchoose2.sml] *)
-
 fun list_nchoose2(xs: int list): (int * int) list =
     let
-        fun helper(res:(int *int) list, xs: int list, i:int): (int * int) list =
-            if i = list_length(xs) then res
-            else 
+        fun function1(newval:(int *int) list, ys: int list, b:int): (int * int) list =
+            case  b = list_length(ys) of
+                true => newval
+                |false =>
                 let 
-                    val curr = list_get_at(xs,i);
+                    val temp = list_get_at(ys,b);
                 in 
-                    helper(list_append(res, list_reduce_left(xs, [], fn(r0,x) => if curr < x then (curr, x)::r0 else r0)), xs, i+1)
+                    function1(list_append(newval, list_foldleft(ys, [], fn(manq,x) => if temp < x then (temp, x)::manq else manq)), ys, b+1)
                 end
     in
-        helper([],xs, 0)
+        function1([],xs, 0)
     end;
-
-list_nchoose2([1,3,2])
