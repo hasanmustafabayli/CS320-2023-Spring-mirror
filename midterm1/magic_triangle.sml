@@ -65,19 +65,25 @@ magic_triangle (n : int) : int list list = ...
 (* ****** ****** *)
 
 (* end of [CS320-2023-Spring-midterm1-magic_triangle.sml] *)
-fun list_enumerate(xs: 'a list): (int * 'a) list =
-  list_zip2(int1_listize(list_length(xs)),xs);
+fun enumerate_list(xs: 'a list): (int * 'a) list =
+  list_zip2(int1_listize(list_length(xs)), xs);
 
-fun helper(current_value: int list): int list =
-  [hd(current_value)] @ list_map(
-
-    list_zip2(int1_listize(list_length(current_value)), current_value)
-    , fn(x) => if #1(x) + 1 = list_length(current_value) then 1 else
-      #2(x) + list_get_at(current_value, #1(x) + 1 )
-    
+fun helper(current_values: int list): int list =
+  [hd(current_values)] @ list_map(
+    list_zip2(int1_listize(list_length(current_values)), current_values),
+    fn(x) => if #1(x) + 1 = list_length(current_values) then 1
+              else #2(x) + list_get_at(current_values, #1(x) + 1)
   );
 
-  fun magic_triangle(n:int):int list list =
-    list_foldleft(list_tabulate(n+1, fn(x)=> x), [[1]], fn(acc,x) => if x = 0 then acc else if x=1 then rev([1,1]::acc) else acc @ [(helper(hd(rev(acc))))]);
+fun magic_triangle(n: int): int list list =
+  list_foldleft(list_tabulate(n + 1, fn(x) => x), [[1]],
+    fn(acc, x) =>
+      if x = 0 then acc
+      else if x = 1 then rev([1, 1]::acc)
+      else acc @ [helper(hd(rev(acc)))]
+  );
+
+
+magic_triangle 0
 
 magic_triangle 0
