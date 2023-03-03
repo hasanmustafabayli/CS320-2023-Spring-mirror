@@ -34,16 +34,82 @@ list_pairing
 
 (* end of [CS320-2023-Spring-midterm1-list_pairing.sml] *)
 
-fun list_pairing (xs: 'a list): ('a * 'a) list * 'a option =
-  let
-    fun aux (ys: 'a list) (acc: ('a * 'a) list) (mid: 'a option): ('a * 'a) list * 'a option =
-      case ys of
-        [] => (acc, mid)
-      | [x] => (acc, SOME x)
-      | x::y::ys' => aux ys' ((x,y)::acc) mid
-  in
-    aux xs [] NONE
-  end
+fun list_grouping(xs: int list): (int *int) list =
+    let 
+        fun
+list_mergesort
+(xs: int list): int list =
+let
+
+fun
+split
+(xs: int list): int list * int list =
+(
+case xs of
+  nil => ([], [])
+| x1 :: xs =>
+(
+  case xs of
+    nil => ([x1], [])
+  | x2 :: xs =>
+    let
+      val
+      (ys, zs) = split(xs)
+    in
+      (x1 :: ys, x2 :: zs)
+    end
+)
+)
+
+fun merge
+( ys: int list
+, zs: int list): int list =
+(
+case ys of
+  nil => zs
+| y1 :: ys =>
+(
+  case zs of
+    nil => y1 :: ys
+  | z1 :: zs =>
+    if y1 <= z1
+    then y1 :: merge(ys, z1 :: zs)
+    else z1 :: merge(y1 :: ys, zs)
+)
+)
+
+in
+
+case xs of
+  nil => []
+| x1 :: xs =>
+(
+  case xs of
+    nil => [x1]
+  | x2 :: xs =>
+    let
+      val (ys, zs) = split(xs)
+    in
+      merge(list_mergesort(x1 :: ys), list_mergesort(x2 :: zs))
+    end
+)
+
+end 
+        val newval = list_mergesort(xs)
+        fun help(xs: int list, valcount: int * int, valres: (int *int) list) =
+            case xs of 
+                nil => valcount::valres
+                |x1::xs1 =>
+                    let
+                        val(count,num) = valcount
+                    in
+                        case x1 = num of 
+                            true =>  help(xs1, (count + 1, num), valres)
+                            |false => help(xs1, (1,x1), valcount::valres)
+                    end;
+    in
+        list_reverse(help(tl newval, (hd newval, 1), []))
+    end;
 
 
 
