@@ -162,34 +162,25 @@ def find_cenergy(image, matrix):
         for x in range(image.height):
             for y in range(image.width):
                 if x == 0:
-                 #if first row
                     benergy[x].append((matrix[x][y], 2))
                 elif y == 0:
-            #if first col
                     if benergy[x-1][y][0] < benergy[x-1][y+1][0]:
-                    #if parent is larger than parent_right
                         benergy[x].append((benergy[x-1][y][0] + matrix[x][y], 0))  
                     else:
                         benergy[x].append((benergy[x-1][y+1][0] + matrix[x][y], 1 ))
                 elif y == image.width-1:
-            #if last col
                     if benergy[x-1][y-1][0] < benergy[x-1][y][0] :
-                    #if parent is larger than parent_left
                         benergy[x].append((benergy[x-1][y-1][0] + matrix[x][y], -1))        
                     else:
                         benergy[x].append((benergy[x-1][y][0] + matrix[x][y], 0))
                 else:
-            #inner pixels
                     if benergy[x-1][y-1][0] <= benergy[x-1][y][0] and benergy[x-1][y-1][0] <= benergy[x-1][y+1][0]:
-                    #if parent and parent_right is larger than parent_left
                         benergy[x].append((benergy[x-1][y-1][0] + matrix[x][y], -1))
                        
                     elif benergy[x-1][y][0] <= benergy[x-1][y-1][0] and benergy[x-1][y][0] <= benergy[x-1][y+1][0]:
-                    #if parent and matrix is larger than parent_right
                         benergy[x].append((benergy[x-1][y][0] + matrix[x][y], 0))
                     else:
                      benergy[x].append((benergy[x-1][y+1][0] + matrix[x][y], 1))
-    #return cenergy[-1]
         return benergy
 
 def min_path(finding,image):
@@ -221,12 +212,9 @@ def image_seam_carving_color(image, ncol):
     newlist = list(energy.pixlst)
     for i in range(ncol):  
         matrix = create_matrix(image)
-        #gives list of list of ints
         benergy = find_cenergy(image, matrix)
-       #gives list of list of tuples
         seam = min_path(benergy,image)
-        #gives min seam and path upwards of pixels to remove
-        #gives list of ints 
+
        
         image = imgvec.image_make_pylist\
  (image.height, image.width-1, imgvec.image_i2filter_pylist(image, lambda i0, j0, _: seam[i0] != j0))
