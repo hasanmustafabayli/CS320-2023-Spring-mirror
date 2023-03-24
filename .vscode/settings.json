@@ -1,0 +1,6 @@
+{
+    "python.analysis.extraPaths": [
+        "./assigns/05/MySolution/Python",
+        "./mypylib"
+    ]
+}

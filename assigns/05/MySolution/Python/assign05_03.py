@@ -12,6 +12,7 @@ BU CAS CS320-2023-Spring: Image Processing
 """
 ####################################################
 import math
+import numpy as np
 ####################################################
 import kervec
 import imgvec
@@ -147,7 +148,69 @@ def image_blur_bbehav_color(image, ksize, bbehav):
 # save_color_image\
 #    (image_blur_bbehav_color(balloons, 5, 'extend'), "OUTPUT/balloons_blurred.png")
 ####################################################
+def create_matrix(our1):
+        matrix = []
+        our = image_edges_color(our1)
+        newlist = list(our.pixlst)
+        for i in range(our.height):
+            row = newlist[i*our.width : (i+1)*our.width]
+            matrix.append(row)
+        return matrix
 
+def find_cenergy(image, matrix):    
+        benergy = [[] for _ in range(image.height)]
+        for x in range(image.height):
+            for y in range(image.width):
+                if x == 0:
+                 #if first row
+                    benergy[x].append((matrix[x][y], 2))
+                elif y == 0:
+            #if first col
+                    if benergy[x-1][y][0] < benergy[x-1][y+1][0]:
+                    #if parent is larger than parent_right
+                        benergy[x].append((benergy[x-1][y][0] + matrix[x][y], 0))  
+                    else:
+                        benergy[x].append((benergy[x-1][y+1][0] + matrix[x][y], 1 ))
+                elif y == image.width-1:
+            #if last col
+                    if benergy[x-1][y-1][0] < benergy[x-1][y][0] :
+                    #if parent is larger than parent_left
+                        benergy[x].append((benergy[x-1][y-1][0] + matrix[x][y], -1))        
+                    else:
+                        benergy[x].append((benergy[x-1][y][0] + matrix[x][y], 0))
+                else:
+            #inner pixels
+                    if benergy[x-1][y-1][0] <= benergy[x-1][y][0] and benergy[x-1][y-1][0] <= benergy[x-1][y+1][0]:
+                    #if parent and parent_right is larger than parent_left
+                        benergy[x].append((benergy[x-1][y-1][0] + matrix[x][y], -1))
+                       
+                    elif benergy[x-1][y][0] <= benergy[x-1][y-1][0] and benergy[x-1][y][0] <= benergy[x-1][y+1][0]:
+                    #if parent and matrix is larger than parent_right
+                        benergy[x].append((benergy[x-1][y][0] + matrix[x][y], 0))
+                    else:
+                     benergy[x].append((benergy[x-1][y+1][0] + matrix[x][y], 1))
+    #return cenergy[-1]
+        return benergy
+
+def min_path(finding,image):
+        row = image.height-1
+        column = image.width-1
+        minvalue = finding[row][0][0]
+        collist = []
+        for x in range(column):
+            currentval = finding[row][x]
+            if currentval[0] < minvalue:
+                minvalue = currentval[0]
+                pathnum = currentval[1]
+                index = x
+        collist.insert(0,index)
+        hasan = minvalue
+        for c in range(row-1,-1,-1):
+            newcolumn = collist[0] + pathnum
+            newtuple = finding[c][newcolumn]
+            pathnum = newtuple[1]
+            collist.insert(0, newcolumn)
+        return collist
 def image_seam_carving_color(image, ncol):
     """
     Starting from the given image, use the seam carving technique to remove
@@ -155,7 +218,35 @@ def image_seam_carving_color(image, ncol):
     """
     assert ncol < image.width
     energy = image_edges_color(image)
-    raise NotImplementedError
+    newlist = list(energy.pixlst)
+    for i in range(ncol):  
+        matrix = create_matrix(image)
+        #gives list of list of ints
+        benergy = find_cenergy(image, matrix)
+       #gives list of list of tuples
+        seam = min_path(benergy,image)
+        #gives min seam and path upwards of pixels to remove
+        #gives list of ints 
+       
+        image = imgvec.image_make_pylist\
+ (image.height, image.width-1, imgvec.image_i2filter_pylist(image, lambda i0, j0, _: seam[i0] != j0))
+         #image = imgvec.image_make_pylist(, energy.width-1, imgvec.image_i2filter_pylist(image, lambda i0, j0, _: seam[i0] != j0))
+    return image
+
+
+    
+
+
+
+#balloons = load_color_image("INPUT/balloons.png")
+#save_color_image(image_seam_carving_color(balloons,100), "OUTPUT/balloons_100.png")
+
+
+
+
+
+
+
 
 ####################################################
 # save_color_image(image_seam_carving_color(balloons, 100), "OUTPUT/balloons_seam_carving_100.png")
