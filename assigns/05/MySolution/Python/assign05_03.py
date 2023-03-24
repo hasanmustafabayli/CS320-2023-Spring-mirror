@@ -157,7 +157,7 @@ def create_matrix(our1):
             matrix.append(row)
         return matrix
 
-def find_cenergy(image, matrix):    
+def find_benergy(image, matrix):    
         benergy = [[] for _ in range(image.height)]
         for x in range(image.height):
             for y in range(image.width):
@@ -212,7 +212,7 @@ def image_seam_carving_color(image, ncol):
     newlist = list(energy.pixlst)
     for i in range(ncol):  
         matrix = create_matrix(image)
-        benergy = find_cenergy(image, matrix)
+        benergy = find_benergy(image, matrix)
         seam = min_path(benergy,image)
 
        
