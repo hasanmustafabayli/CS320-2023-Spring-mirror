@@ -120,15 +120,19 @@ def fnlist_foreach(xs, work_func):
     return None
 
 ####################################################
-def fnlist_reverse(xs):
-    return \
-        fnlist_foldleft \
-        (xs, fnlist_nil(), lambda r0, x0: fnlist_cons(x0, r0))
-####################################################
 def fnlist_append(xs, ys):
     return fnlist_foldright(xs, ys, fnlist_cons)
 def fnlist_concat(xss):
     return fnlist_foldright(xss, fnlist_nil(), fnlist_append)
+####################################################
+def fnlist_rappend(xs, ys):
+    while(xs.ctag > 0):
+        x1 = xs.cons1
+        xs = xs.cons2
+        ys = fnlist_cons(x1, ys)
+    return ys
+def fnlist_reverse(xs):
+    return fnlist_rappend(xs, fnlist_nil())
 ####################################################
 def fnlist_foldleft(xs, ini, fopr_func):
     return \
@@ -150,6 +154,9 @@ def fnlist_rpylistize(xs):
 
 def fnlist_make_pylist(xs): return pylist_fnlistize(xs)
 
+def fnlist_filter_pylist(xs, test_func):
+    return foreach_to_filter_pylist(fnlist_foreach)(xs, test_func)
+
 ###########################################################################
 
 def pylist_foreach(xs, work_func):
@@ -167,7 +174,7 @@ def pylist_make_map(xs, fopr_func):
 def pylist_map_pylist(xs, fopr_func):
     return foreach_to_map_pylist(pylist_foreach)(xs, fopr_func)
 
-def pylist_filter(xs, test_func):
+def pylist_make_filter(xs, test_func):
     return foreach_to_filter_pylist(pylist_foreach)(xs, test_func)
 def pylist_filter_pylist(xs, test_func):
     return foreach_to_filter_pylist(pylist_foreach)(xs, test_func)
@@ -420,7 +427,153 @@ def foreach_to_filter_pylist(foreach):
 def foreach_to_filter_fnlist(foreach):
     return \
         lambda xs, test_func: \
-        funlist_make_pylist(foreach_to_filter_fnlist(foreach)(xs, test_func))
+        fnlist_make_pylist(foreach_to_filter_pylist(foreach)(xs, test_func))
+
+###########################################################################
+
+def iforeach_to_imap_pylist(iforeach):
+    def imap_pylist(xs, ifopr_func):
+        res = []
+        def iwork_func(i0, x0):
+            nonlocal res
+            res.append(ifopr_func(i0, x0))
+            return None
+        iforeach(xs, iwork_func)
+        return res
+    return imap_pylist # foreach-function is turned into imap_pylist-function
+
+def iforeach_to_imap_fnlist(iforeach):
+    return \
+        lambda xs, ifopr_func: \
+        fnlist_make_pylist(iforeach_to_imap_pylist(iforeach)(xs, ifopr_func))
+
+def iforeach_to_imap_rfnlist(iforeach):
+    def imap_rfnlist(xs, ifopr_func):
+        res = fnlist_nil()
+        def iwork_func(i0, x0):
+            nonlocal res
+            res = fnlist_cons(ifopr_func(i0, x0), res)
+            return None
+        iforeach(xs, iwork_func)
+        return res
+    return imap_rfnlist # foreach-function is turned into imap_rfnlist-function
+
+###########################################################################
+
+def iforeach_to_ifilter_pylist(iforeach):
+    def ifilter_pylist(xs, itest_func):
+        res = []
+        def iwork_func(i0, x0):
+            nonlocal res
+            if itest_func(i0, x0):
+                res.append(x0)
+            return None
+        iforeach(xs, iwork_func)
+        return res
+    return ifilter_pylist # foreach-function is turned into map_pylist-function
+
+def iforeach_to_ifilter_fnlist(iforeach):
+    return \
+        lambda xs, itest_func: \
+        fnlist_make_pylist(iforeach_to_ifilter_pylist(iforeach)(xs, itest_func))
+
+###########################################################################
+#
+# HX-2023-03-21: Lazy-evaluation and streams
+#
+###########################################################################
+
+class strcon:
+    ctag = -1
+    def get_ctag(self):
+        return self.ctag
+# end-of-class(strcon)
+
+class strcon_nil(strcon):
+    def __init__(self):
+        self.ctag = 0
+        return None
+# end-of-class(strcon_nil)
+
+class strcon_cons(strcon):
+    def __init__(self, cons1, cons2):
+        self.ctag = 1
+        self.cons1 = cons1
+        self.cons2 = cons2
+        return None
+    def get_cons1(self):
+        return self.cons1
+    def get_cons2(self):
+        return self.cons2
+# end-of-class(strcon_cons)
+
+###########################################################################
+
+def stream_foreach(fxs, work):
+    while(True):
+        cxs = fxs()
+        if (cxs.ctag == 0):
+            break
+        else:
+            work(cxs.cons1)
+            fxs = cxs.cons2
+        # end-of-(if(cxs.ctag==0)-then-else)
+    return None # end-of-(stream_foreach)
+
+def stream_forall(fxs, test):
+    foreach_to_forall(stream_foreach)(fxs, test)
+def stream_iforall(fxs, itest):
+    foreach_to_iforall(stream_foreach)(fxs, itest)
+
+###########################################################################
+
+def fnlist_streamize(xs):
+    def helper(xs):
+        if xs.ctag == 0:
+            return strcon_nil()
+        else:
+            return \
+                strcon_cons(xs.cons1, lambda: helper(xs.cons2))
+        # end-of-(if(xs.ctag==0)-then-else)
+    return lambda: helper(xs)
+
+###########################################################################
+
+def stream_tabulate(n0, fopr):
+    def helper1(i0):
+        return strcon_cons(fopr(i0), lambda: helper1(i0+1))
+    def helper2(i0):
+        if i0 >= n0:
+            return strcon_nil()
+        else:
+            return strcon_cons(fopr(i0), lambda: helper2(i0+1))
+        # end-of-(if(i0 >= n0)-then-else)
+    if n0 < 0:
+        return lambda: helper1(0)
+    else:
+        return lambda: helper2(0)
+    # end-of-(if(n0 < 0)-then-else)
+    
+###########################################################################
+
+def string_streamize(xs):
+    return stream_tabulate(len(xs), lambda i0: xs[i0])
+def pylist_streamize(xs):
+    return stream_tabulate(len(xs), lambda i0: xs[i0])
+def pytuple_streamize(xs):
+    return stream_tabulate(len(xs), lambda i0: xs[i0])
+
+###########################################################################
+
+def stream_make_map(fxs, fopr):
+    def helper(fxs):
+        cxs = fxs()
+        if cxs.ctag == 0:
+            return strcon_nil()
+        else:
+            return strcon_cons(fopr(cxs.cons1), lambda: helper(cxs.cons2))
+        # end-of-(if(cxs.ctag==0)-then-else)
+    return lambda: helper(fxs)
 
 ###########################################################################
 
