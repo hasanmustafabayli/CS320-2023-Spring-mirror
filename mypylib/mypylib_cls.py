@@ -338,22 +338,6 @@ def foreach_to_iforeach(foreach):
 
 ###########################################################################
 
-def foreach_to_ifoldleft(foreach):
-    def ifoldleft(xs, r0, ifopr_func):
-        i0 = 0
-        res = r0
-        def work_func(x0):
-            nonlocal i0
-            nonlocal res
-            res = ifopr_func(res, i0, x0)
-            i0 = i0 + 1
-            return None
-        foreach(xs, work_func)
-        return res
-    return ifoldleft # foreach-function is turned into foldleft-function
-
-###########################################################################
-
 def foreach_to_pylistize(foreach):
     def pylistize(xs):
         res = []
@@ -436,55 +420,7 @@ def foreach_to_filter_pylist(foreach):
 def foreach_to_filter_fnlist(foreach):
     return \
         lambda xs, test_func: \
-        fnlist_make_pylist(foreach_to_filter_pylist(foreach)(xs, test_func))
-
-###########################################################################
-
-def iforeach_to_imap_pylist(iforeach):
-    def imap_pylist(xs, ifopr_func):
-        res = []
-        def iwork_func(i0, x0):
-            nonlocal res
-            res.append(ifopr_func(i0, x0))
-            return None
-        iforeach(xs, iwork_func)
-        return res
-    return imap_pylist # foreach-function is turned into imap_pylist-function
-
-def iforeach_to_imap_fnlist(iforeach):
-    return \
-        lambda xs, ifopr_func: \
-        fnlist_make_pylist(iforeach_to_imap_pylist(iforeach)(xs, ifopr_func))
-
-def iforeach_to_imap_rfnlist(iforeach):
-    def imap_rfnlist(xs, ifopr_func):
-        res = fnlist_nil()
-        def iwork_func(i0, x0):
-            nonlocal res
-            res = fnlist_cons(ifopr_func(i0, x0), res)
-            return None
-        iforeach(xs, iwork_func)
-        return res
-    return imap_rfnlist # foreach-function is turned into imap_rfnlist-function
-
-###########################################################################
-
-def iforeach_to_ifilter_pylist(iforeach):
-    def ifilter_pylist(xs, itest_func):
-        res = []
-        def iwork_func(i0, x0):
-            nonlocal res
-            if itest_func(i0, x0):
-                res.append(x0)
-            return None
-        iforeach(xs, iwork_func)
-        return res
-    return ifilter_pylist # foreach-function is turned into map_pylist-function
-
-def iforeach_to_ifilter_fnlist(iforeach):
-    return \
-        lambda xs, itest_func: \
-        fnlist_make_pylist(iforeach_to_ifilter_fnlist(iforeach)(xs, itest_func))
+        funlist_make_pylist(foreach_to_filter_fnlist(foreach)(xs, test_func))
 
 ###########################################################################
 
