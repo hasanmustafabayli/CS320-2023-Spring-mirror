@@ -25,10 +25,16 @@ val theNatPairs: (int*int) stream = fn () => ...
 (* Define a function to compute the nth pair *)
 
 
-fun theNatPairs() =
+val theNatPairs: (int*int) stream = fn () => 
   let
-    fun pairsFrom(i, j) = stream_cons((i, j), pairsFrom(i+1, 0))
+    fun helper(x:int, y:int) =
+      case x > 0 of
+        true => strcon_cons((x,y), fn()=> helper(x-1,y+1))
+        |false => strcon_cons((x,y),fn()=> helper(x+y+1,0))
   in
-    strcon_cons((0,0), pairsFrom(1,0))
+    helper(0,0)
   end
+    
+
+
 

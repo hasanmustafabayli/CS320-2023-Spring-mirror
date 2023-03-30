@@ -34,12 +34,12 @@ val the_ln2_stream: real stream = fn() => ...
 
 val the_ln2_stream: real stream = fn() =>
   let
-    fun helper(n:int):real stream =
-        case n mod 2 = 0 of
-            true => stream_cons(~1.0/Real.fromInt(n), helper(n+1))
-            |false => stream_cons(1.0/Real.fromInt(n),  helper(n+1))
+    fun helper(n:real, totalsum:real):real strcon =
+        case Real.floor(n) mod 2 = 0 of
+            true => strcon_cons(totalsum+ (~1.0/n),fn() => helper(n+1.0, totalsum+ (~1.0/n)))
+            |false => strcon_cons(totalsum+ (1.0/n), fn() => helper(n+1.0, totalsum+ (1.0/n)))
   in
-    strcon_cons(1.0, helper(1))
+     helper(1.0, 0.0)
   end;
 
 
