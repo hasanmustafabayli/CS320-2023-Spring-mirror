@@ -94,6 +94,7 @@ def doublet_stream_from(word):
     starting with the initial sequence [word], and whose edges are formed by adding a legal neighbor to the end of a sequence.
       The lambda function returned by doublet_stream_from() generates the doublets by iterating over the BFS fnlist and 
       returning pairs of consecutive elements."""  
+    print("hasan")
     nxs = queue.Queue(); nxs.put((word,))
     return get_gtree_bfs(nxs, get_wpath_neighbors_legal)
 

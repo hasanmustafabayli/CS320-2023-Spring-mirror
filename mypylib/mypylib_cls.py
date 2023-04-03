@@ -345,6 +345,44 @@ def foreach_to_iforeach(foreach):
 
 ###########################################################################
 
+def foreach_to_iforall(foreach):
+    class FalseExn(Exception):
+        def __init_(self):
+            return None
+    def iforall(xs, itest_func):
+        i0 = 0
+        def work_func(x0):
+            nonlocal i0
+            if itest_func(i0, x0):
+                i0 = i0 + 1
+                return None
+            else:
+                raise FalseExn
+        try:
+            foreach(xs, work_func)
+            return True
+        except FalseExn:
+            return False
+    return iforall # foreach-function is turned into forall-function
+
+###########################################################################
+
+def foreach_to_ifoldleft(foreach):
+    def ifoldleft(xs, r0, ifopr_func):
+        i0 = 0
+        res = r0
+        def work_func(x0):
+            nonlocal i0
+            nonlocal res
+            res = ifopr_func(res, i0, x0)
+            i0 = i0 + 1
+            return None
+        foreach(xs, work_func)
+        return res
+    return ifoldleft # foreach-function is turned into foldleft-function
+
+###########################################################################
+
 def foreach_to_pylistize(foreach):
     def pylistize(xs):
         res = []
@@ -520,10 +558,29 @@ def stream_foreach(fxs, work):
         # end-of-(if(cxs.ctag==0)-then-else)
     return None # end-of-(stream_foreach)
 
+def stream_get_at(fxs, i0):
+    while(True):
+        cxs = fxs()
+        if (cxs.ctag == 0):
+            raise IndexError
+        else:
+            if i0 <= 0:
+                return cxs.cons1
+            else:
+                i0 = i0 - 1
+                fxs = cxs.cons2
+    return None # This is deadcode
+
+###########################################################################
+
 def stream_forall(fxs, test):
-    foreach_to_forall(stream_foreach)(fxs, test)
+    return foreach_to_forall(stream_foreach)(fxs, test)
+
 def stream_iforall(fxs, itest):
-    foreach_to_iforall(stream_foreach)(fxs, itest)
+    return foreach_to_iforall(stream_foreach)(fxs, itest)
+
+def stream_iforeach(fxs, iwork):
+    return foreach_to_iforeach(stream_foreach)(fxs, iwork)
 
 ###########################################################################
 
@@ -571,9 +628,66 @@ def stream_make_map(fxs, fopr):
         if cxs.ctag == 0:
             return strcon_nil()
         else:
-            return strcon_cons(fopr(cxs.cons1), lambda: helper(cxs.cons2))
+            return strcon_cons\
+                (fopr(cxs.cons1), lambda: helper(cxs.cons2))
         # end-of-(if(cxs.ctag==0)-then-else)
     return lambda: helper(fxs)
+
+###########################################################################
+
+def stream_make_filter(fxs, test):
+    def helper(fxs):
+        while(True):
+            cxs = fxs()
+            if cxs.ctag == 0:
+                return strcon_nil()
+            else:
+                cx1 = cxs.cons1
+                fxs = cxs.cons2
+                if test(cx1):
+                    return strcon_cons(cx1, lambda: helper(fxs))
+            # end-of-(if(cxs.ctag==0)-then-else)
+    return lambda: helper(fxs)
+
+###########################################################################
+
+import queue
+
+###########################################################################
+
+def gtree_bfs(nxs, fchlds):
+    def helper(qnxs):
+        if qnxs.empty():
+            return strcon_nil()
+        else:
+            nx1 = qnxs.get()
+            # print("gtree_bfs: helper: nx1 = ", nx1)
+            for nx2 in fchlds(nx1):
+                qnxs.put(nx2)
+            return strcon_cons(nx1, lambda: helper(qnxs))
+        # end-of-(if(not nxs)-then-else)
+    qnxs = queue.Queue()
+    for nx1 in nxs:
+        qnxs.put(nx1)
+    return lambda: helper(qnxs)
+
+###########################################################################
+
+def gtree_dfs(nxs, fchlds):
+    def helper(qnxs):
+        if qnxs.empty():
+            return strcon_nil()
+        else:
+            nx1 = qnxs.get()
+            # print("gtree_bfs: helper: nx1 = ", nx1)
+            for nx2 in reversed(fchlds(nx1)):
+                qnxs.put(nx2)
+            return strcon_cons(nx1, lambda: helper(qnxs))
+        # end-of-(if(not nxs)-then-else)
+    qnxs = queue.LifoQueue()
+    for nx1 in nxs:
+        qnxs.put(nx1)
+    return lambda: helper(qnxs)
 
 ###########################################################################
 

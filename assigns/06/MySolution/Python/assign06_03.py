@@ -114,6 +114,7 @@ def solve_N_queen_puzzle(N):
     """
     man = queue.LifoQueue()
     new = fgetboards((), N)
+    print("hasan")
     for i in range(N):
         ls = new
         new = new.cons1
