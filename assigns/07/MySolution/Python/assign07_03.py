@@ -38,17 +38,14 @@ http://ats-lang.github.io/EXAMPLE/BUCS320/Doublets/Doublets.html
     two words forming a doublet.
     raise NotImplementedError"""
 ####################################################
-
 from collections import deque
-
 from nltk.corpus import words
-from collections import deque
 
-def doublet_bfs_test(w1, w2):
+def doublet_bfs_test(start_word, end_word):
     """
-    Given two words w1 and w2, this function should
-    return None if w1 and w2 do not for a doublet. Otherwise
-    it returns a path connecting w1 and w2 that attests to the
+    Given two words start_word and end_word, this function should
+    return None if start_word and end_word do not form a doublet. Otherwise,
+    it returns a path connecting start_word and end_word that attests to the
     two words forming a doublet.
     """
     # Get the list of valid words
@@ -57,34 +54,37 @@ def doublet_bfs_test(w1, w2):
     # Create a set to store valid words for faster lookup
     valid_words = set(word_list)
 
+    # Check if the start_word and end_word are valid words
+    if start_word not in valid_words or end_word not in valid_words:
+        return []
+
     # Create a queue to store words to be explored
     queue = deque()
-    # Enqueue w1 as the starting word
-    queue.append((w1, [w1]))
+    # Enqueue the start_word as the starting point for BFS
+    queue.append((start_word, [start_word]))
 
     # Keep track of visited words to avoid cycles
-    visited = set([w1])
+    visited = set([start_word])
 
     # Continue BFS until the queue is empty
     while queue:
         # Dequeue the next word and its path
-        word, path = queue.popleft()
+        curr_word, curr_path = queue.popleft()
 
-        # Check if word is a doublet with w2
-        if word == w2:
-            return path
+        # Check if curr_word is a doublet with end_word
+        if curr_word == end_word:
+            return curr_path
 
-        # Generate all 1-step doublets of the word
-        for i in range(len(word)):
+        # Generate all 1-step doublets of the curr_word
+        for i in range(len(curr_word)):
             for c in "abcdefghijklmnopqrstuvwxyz":
-                if c != word[i]:
-                    new_word = word[:i] + c + word[i+1:]
+                if c != curr_word[i]:
+                    new_word = curr_word[:i] + c + curr_word[i+1:]
                     # If new_word is a valid word and has not been visited, enqueue it
                     if new_word in valid_words and new_word not in visited:
                         visited.add(new_word)
-                        queue.append((new_word, path + [new_word]))
+                        queue.append((new_word, curr_path + [new_word]))
 
-    # If w2 cannot be reached from w1, return None
-    return None
-
+    # If end_word cannot be reached from start_word, return an empty list
+    return []
 
