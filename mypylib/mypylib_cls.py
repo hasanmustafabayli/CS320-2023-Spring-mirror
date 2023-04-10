@@ -665,11 +665,7 @@ def gtree_bfs(nxs, fchlds):
             for nx2 in fchlds(nx1):
                 qnxs.put(nx2)
             return strcon_cons(nx1, lambda: helper(qnxs))
-<<<<<<< HEAD
-        # end-of-(if(not nxs)-then-else)
-=======
         # end-of-(if(qnxs.empty())-then-else)
->>>>>>> upstream/main
     qnxs = queue.Queue()
     for nx1 in nxs:
         qnxs.put(nx1)
@@ -683,19 +679,11 @@ def gtree_dfs(nxs, fchlds):
             return strcon_nil()
         else:
             nx1 = qnxs.get()
-<<<<<<< HEAD
-            # print("gtree_bfs: helper: nx1 = ", nx1)
-            for nx2 in reversed(fchlds(nx1)):
-                qnxs.put(nx2)
-            return strcon_cons(nx1, lambda: helper(qnxs))
-        # end-of-(if(not nxs)-then-else)
-=======
             # print("gtree_dfs: helper: nx1 = ", nx1)
             for nx2 in reversed(fchlds(nx1)):
                 qnxs.put(nx2)
             return strcon_cons(nx1, lambda: helper(qnxs))
         # end-of-(if(qnxs.empty())-then-else)
->>>>>>> upstream/main
     qnxs = queue.LifoQueue()
     for nx1 in nxs:
         qnxs.put(nx1)
@@ -703,9 +691,6 @@ def gtree_dfs(nxs, fchlds):
 
 ###########################################################################
 
-<<<<<<< HEAD
-######################### end of [mypylib-cls.py] #########################
-=======
 def graph_bfs(nxs, fnexts):
     visited = set()
     def helper(qnxs):
@@ -773,4 +758,3 @@ def gpath_bfs(nxs, fnexts):
 ###########################################################################
 
 ######################### end of [mypylib-cls.py] #########################
->>>>>>> upstream/main
