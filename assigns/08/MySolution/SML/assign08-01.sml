@@ -16,6 +16,25 @@ stream_permute_list(xs: 'a list): 'a list stream = ...
 //
 *)
 
+fun stream_permute_list(xs: 'a list): 'a list stream =
+    let 
+        fun helper(a: 'a, ys: 'a list): 'a list stream = fn() =>
+            case (a, ys) of
+                (y, nil) =>  (* base case: if the input list is empty, return a stream containing just the single element y *)
+                    strcon_cons([y], stream_nil())
+                |(y, val1::val2) =>  (* recursive case: if the input list is non-empty, insert y between every pair of adjacent elements in the list *)
+                    strcon_cons((y :: val1 :: val2), stream_make_map(helper(y, val2), fn(newpar) => val1 :: newpar))
+        in
+            case xs of
+            [] => stream_cons([], stream_nil())  (* base case: if the input list is empty, return a stream containing just the empty list *)
+            |x :: xs => stream_concat(stream_make_map(stream_permute_list(xs), fn(newpar) => helper (x,newpar)))
+                (* recursive case: if the input list is non-empty, split it into its first element x and the rest of the list xs, 
+                   recursively permute the rest of the list xs to get a stream of all permutations of xs without x,
+                   then for each permutation in the stream, insert x into every possible position and concatenate the resulting streams *)
+        end
+
+
+
 (* ****** ****** *)
 
 (* end of [CS320-2023-Spring-assign08-01.sml] *)

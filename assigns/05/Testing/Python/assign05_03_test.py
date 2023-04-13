@@ -2,7 +2,6 @@
 import sys
 sys.path.append('./../../MySolution/Python')
 from assign05_03 import *
-######################################################
 balloons = \
     load_color_image\
     ("./../../MySolution/Python/INPUT/balloons.png")

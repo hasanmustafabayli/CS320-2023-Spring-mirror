@@ -26,8 +26,23 @@ The following implementation is stream-based:
 Please give a generator-based implementation of graph_bfs!!!
 """
 def generator_graph_bfs(nxs, fnexts):
-    """
-    This function does the same as graph_bfs.
-    """
-    raise NotImplementedError
+    # initialize a set to keep track of visited nodes
+    visited = set()
+    # initialize a list to use as a queue, and add the initial nodes to it
+    qnxs = []
+    for nx0 in nxs:
+        qnxs.append(nx0)
+        visited.add(nx0)
+    # enter a loop that iterates while there are still nodes in the queue
+    while qnxs:
+        # get the first node from the queue and yield it
+        nx1 = qnxs.pop(0)
+        yield nx1
+        # iterate over the neighbors of the current node
+        for nx2 in fnexts(nx1):
+            # if the neighbor has not been visited, add it to the queue and mark it as visited
+            if nx2 not in visited:
+                qnxs.append(nx2)
+                visited.add(nx2)
+
 ####################################################
