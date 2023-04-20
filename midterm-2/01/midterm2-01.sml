@@ -33,3 +33,24 @@ stream_evaluate
 (* ****** ****** *)
 
 (* end of [CS320-2023-Spring-midterm2-01.sml] *)
+fun strongval(newint1:real, newint2:int) : real =
+case (newint2 = 0) of 
+    true => 1.0
+    |false => case (newint2 mod 2 = 0) of
+        true => strongval(newint1 * newint1, newint2 div 2)
+        |false => newint1 * strongval(newint1 * newint1, newint2 div 2)
+
+fun stream_evaluate(fxs: real stream, x0: real): real stream =
+    let
+        fun evaluatehelp(fxs, ser, n) = 
+                fn() => case fxs() of 
+                            strcon_nil => strcon_nil
+                            |strcon_cons(new, new1) =>
+          let
+              val x1 = ser + new * strongval(x0 ,n)
+          in
+              strcon_cons(x1, evaluatehelp(new1, x1, n+1))
+          end
+    in
+        evaluatehelp(fxs, 0.0, 0)
+    end

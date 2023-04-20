@@ -32,3 +32,20 @@ mytree_dfs_streamize(t0: 'a mytree): 'a stream = ...
 (* ****** ****** *)
 
 (* end of [CS320-2023-Spring-midterm2-02.sml] *)
+
+
+fun mytree_dfs_streamize(t0: 'a mytree): 'a stream =
+    let
+        fun hasan(mytree_node(x, children)) =
+            let
+                fun lchildren(children) =
+                    case children of
+                        [] => stream_nil()
+                      | t::ts => stream_append(mytree_dfs_streamize(t), lchildren(ts))
+            in
+                stream_cons(x, fn () => lchildren(children)())
+            end
+    in
+        hasan(t0)
+    end
+

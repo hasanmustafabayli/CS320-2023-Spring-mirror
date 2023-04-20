@@ -40,3 +40,31 @@ stream_drop
 (* ****** ****** *)
 
 (* end of [CS320-2023-Spring-midterm2-00.sml] *)
+
+
+fun stream_take(fxs: 'a stream, n: int): 'a stream = 
+
+    let
+        fun helper(ys: 'a strcon, newint: int): 'a strcon =
+             
+             case (ys, newint) of
+                (_, 0) => strcon_nil
+                 | (strcon_nil, _) => strcon_nil
+                 | (strcon_cons(val1, val2), _) => strcon_cons(val1, fn () => helper(val2(), newint-1))
+    in
+            fn () => helper(fxs(), n)
+    end
+
+(* ****** ****** *)
+
+
+fun stream_drop(fxs: 'a stream, n: int): 'a stream = 
+
+let
+    fun helper(val1: 'a stream, newint: int): 'a strcon =
+      case (newint <= 0) of  
+        true => val1()
+        |false => helper(stream_tail(val1), newint-1)
+  in
+    fn () => helper(fxs, n)
+  end
