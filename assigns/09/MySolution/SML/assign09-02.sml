@@ -36,3 +36,8 @@ fgenerator_make_stream(fxs: 'a stream): 'a fgenerator = ...
 (* ****** ****** *)
 
 (* end of [CS320-2023-Spring-assigns-assign09-02.sml] *)
+
+type 'a fgenerator = 'a option generator
+
+fun fgenerator_make_stream (fxs : 'a stream) : 'a fgenerator =
+  generator_make fxs (fn () => NONE)

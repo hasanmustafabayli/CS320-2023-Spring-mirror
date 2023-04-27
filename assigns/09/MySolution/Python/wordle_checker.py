@@ -27,6 +27,28 @@ wordle_hint(w1, w2) =
 (2, b), (1, b), (2, c), (1, c), (0, d)
 """
 ########################################################################
-def wordle_hint(w1, w2):
-    raise NotImplementedError
+
 ########################################################################
+def wordle_hint(w1, w2):
+    l = []
+    w1_count = {c: w1.count(c) for c in set(w1)}
+    for i, c in enumerate(w2):
+        if c in w1_count:
+            if c == w1[i]:
+                l.append((1, c))
+                w1_count[c] -= 1
+            elif w1_count[c] > 0:
+                l.append((2, c))
+                w1_count[c] -= 1
+            else:
+                l.append((0, c))
+        else:
+            l.append((0, c))
+    return l
+w1 = "abbcc"
+w2 = "bbccd"
+print(wordle_hint(w1,w2))
+
+
+
+

@@ -47,3 +47,18 @@ val the_ln2_stream: real stream = fn() =>
 stream_cons(1.0, fn() => stream_cons(1.0, fn() => stream_nil))*)
 
 
+(*val the_ln2_stream: real stream = 
+  let
+    fun helper(new:int, total: real) = fn() =>
+        if new mod 2 = 0 then
+            strcon_cons(total + (~1.0/Real.fromInt(new)), fn() => helper(new + 1, total + ~1.0/Real.fromInt(new) ))
+        else 
+            strcon_cons(total + (1.0/Real.fromInt(new)), fn() => helper(new + 1, total + 1.0/Real.fromInt(new) ))
+  in
+    helper(1, 0.0)
+  end*)
+
+
+
+
+

@@ -18,16 +18,29 @@ stream consist of lists that are columns of the
 matrix.
 *)
 
-fun stream_ziplst(lst: 'a stream list): 'a list stream = 
-    let 
+(*fun
+stream_ziplst(ls: 'a stream list): 'a list stream =
+    let
+        fun helper(lst: 'a stream list, new: 'a list, x: int): 'a list stream =
+            case lst of
+                nil => stream_cons(nil, fn() => strcon_nil)
+                |hd::nil => case hd() of 
+                                strcon_nil => stream_cons([]::newlist, fn() => helper(ls, [], 0))
+                                |strcon_cons(val, val1) =>
+
+                |hd::tl => case hd of *)
         
+
+
+fun stream_ziplst(lst: 'a stream list): 'a list stream = 
+    let  
         fun newcol(lst: 'a stream list): 'a list =
             case lst of 
                 [] => []
                 |elem::telem =>
                     case elem() of 
                         strcon_nil => []
-                        |strcon_cons(val1, val1s) => val1 :: newcol(telem)
+                        |strcon_cons(val1, val1s) => val 1 :: newcol(telem)
         fun newstream(lst: 'a stream list): 'a stream list =
             case lst of
                 [] => []
@@ -42,7 +55,5 @@ fun stream_ziplst(lst: 'a stream list): 'a list stream =
         |false => fn () => strcon_cons(newcol(lst), stream_ziplst(newstream(lst)))
 
     end
-
-
 (* ****** ****** *)
 

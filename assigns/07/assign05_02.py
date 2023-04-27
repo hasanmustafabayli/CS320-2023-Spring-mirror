@@ -23,9 +23,7 @@ def word_neighbors(word):
     wlen = string_length(word)
     return \
         fnlist_concat(string_imap_fnlist\
-                      (word, lambda i, c: fnlist_concat\
-                       (string_imap_fnlist(AB(), lambda _, c1: fnlist_sing\
-                                           (string_tabulate(wlen, lambda j: strsub(word, j) if i != j else c1)) if (c != c1) else fnlist_nil()))))
+                      (word, lambda i, c: fnlist_concat(string_imap_fnlist(AB(), lambda _, c1: fnlist_sing(string_tabulate(wlen, lambda j: strsub(word, j) if i != j else c1)) if (c != c1) else fnlist_nil()))))
 
 ####################################################
 #
