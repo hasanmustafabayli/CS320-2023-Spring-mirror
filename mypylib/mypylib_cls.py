@@ -830,3 +830,117 @@ def stream_of_generator(xs):
 ###########################################################################
 
 ######################### end of [mypylib-cls.py] #########################
+
+""" Test case for int1_forall"""
+
+def even(x):
+    return x  % 2 == 0
+
+newlist = [1,4,6]
+newbool = int1_forall(len(newlist), lambda x: even(newlist[x]))
+print(newbool)
+
+""" Test case for int1_foreach"""
+
+newlist2 =  [3,4,5]
+def increment(x):
+    print(x)
+    newlist2[x] += 1
+int1_foreach(len(newlist2), lambda x : increment(x))
+print(newlist2)
+
+""" Test case for int1_rforeach"""
+int1_rforeach(len(newlist2), lambda x : increment(x))
+print(newlist2)
+
+""" Defining a new fnlist"""
+newfnlist = fnlist_cons(2, fnlist_cons(3, fnlist_cons(4, fnlist_nil)))
+
+""" Printing a new fnlist"""
+fnlist_print(newfnlist)
+
+"""Testing int1_map_fnlist"""
+
+def square(x):
+    return x * x
+
+xs = fnlist_cons(1, fnlist_cons(2, fnlist_cons(3, fnlist_nil())))
+zs = fnlist_cons(4, fnlist_cons(5, fnlist_cons(6, fnlist_nil())))
+
+fnlist_print(fnlist_append(xs,zs))
+
+"""Testing int1_map_fnlist"""
+newlist2 =  [3,4,5]
+def increment(x):
+   x += 1
+
+
+
+
+# define two fnlists
+ds = fnlist_cons(1, fnlist_cons(2, fnlist_cons(3, fnlist_nil())))
+
+fnlist_print(fnlist_reverse(ds))
+
+def fopr(val, x):
+    return x + 1
+newval = fnlist_foldleft(ds,0,fopr )
+
+
+print("hasan")
+
+ds = fnlist_cons(1, fnlist_cons(2, fnlist_cons(3, fnlist_nil())))
+def sum_func(x, acc):
+    return x*2 + acc
+def fonc(y, val):
+    return fnlist_cons(y+1, val)
+# define a functional list of integers
+xs = fnlist_cons(1, fnlist_cons(2, fnlist_cons(3, fnlist_nil())))
+
+# sum the elements of the list
+result = fnlist_foldright(xs, 0, sum_func)
+result2 = fnlist_foldright(xs, fnlist_nil, fonc)
+
+
+fnlist_print(result2)
+
+# print the result
+print(result) 
+
+def add_one(x):
+    return x + 1
+
+def multiply_by_two(x):
+    return x * 2
+
+def square(x):
+    return x ** 2
+
+
+# concatenate the two lists using fnlist_concat
+
+asq = fnlist_cons(2, fnlist_cons(4, fnlist_cons(6, fnlist_nil())))
+fnlist_print(asq)
+# converts fnlist to a proper list
+newasq = fnlist_pylistize(asq)
+print(newasq)
+
+# converts fnlist to a reversed proper list
+newlis1 = fnlist_rpylistize(asq)
+print(newlis1)
+
+newlis2 = fnlist_make_pylist(asq)
+fnlist_print(newlis2)
+print(asq == newlis2)
+print(type(asq))
+print(type(newlis2))
+
+print(asq.cons1)
+print(newlis2.cons1)
+
+lasq = fnlist_cons(2, fnlist_cons(4, fnlist_cons(6, fnlist_nil())))
+pylasq = fnlist_make_pylist(lasq)
+def test(x):
+    x % 2 == 0
+newlist4 = fnlist_filter_pylist(pylasq,test)
+print(newlist4)
