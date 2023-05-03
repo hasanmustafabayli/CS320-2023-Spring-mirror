@@ -4,6 +4,7 @@
 import sys
 sys.path.append('./../../../05')
 sys.path.append('./../../../../mypylib')
+sys.setrecursionlimit(2000)
 from mypylib_cls import *
 ####################################################
 """
@@ -166,17 +167,35 @@ def image_seam_carving_1col_color(image):
     hh = image.height
     energy = image_edges_color(image)
     ################################################
-    def cenergy(i0, j0):
-        evalue = imgvec.image_get_pixel(energy, i0, j0)
-        if i0 <= 0:
-            return evalue
+    
+    newval = {}
+
+    def cenergy(val1, val2):
+        
+        if val1 not in newval:
+            result = helper(val1, val2)
+            newval[val1] = {val2: result}
+        elif val2 not in newval[val1]:
+            result = helper(val1, val2)
+            newval[val1][val2] = result
         else:
-            if j0 <= 0:
-                return evalue + min(cenergy(i0-1, j0), cenergy(i0-1, j0+1))
-            elif j0 >= ww-1:
-                return evalue + min(cenergy(i0-1, j0-1), cenergy(i0-1, j0))
+            result = newval[val1][val2]
+    
+        return result
+    
+    def helper(i,j):
+            energy_value = imgvec.image_get_pixel(energy, i, j)
+            if i <= 0:
+                return energy_value
             else:
-                return evalue + min(cenergy(i0-1, j0-1), cenergy(i0-1, j0), cenergy(i0-1, j0+1))
+                if j <= 0:
+                    return energy_value + min(cenergy(i-1, j), cenergy(i-1, j+1))
+                elif j >= ww-1:
+                    return energy_value + min(cenergy(i-1, j-1), cenergy(i-1, j))
+                else:
+                    return energy_value + min(cenergy(i-1, j-1), cenergy(i-1, j), cenergy(i-1, j+1))
+
+
     ################################################
     jmin0 = 0
     cmin0 = cenergy(hh-1, 0)
